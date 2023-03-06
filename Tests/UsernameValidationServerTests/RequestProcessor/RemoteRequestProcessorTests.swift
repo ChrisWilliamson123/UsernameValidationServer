@@ -2,6 +2,7 @@ import XCTest
 @testable import UsernameValidationServer
 
 final class RemoteRequestProcessorTests: XCTestCase {
+    // MARK: Error paths
     func testProcess_givenRequestWithNoPath_returnsFailureWithMissingPathError() throws {
         let request = Request()
         let processor = RemoteRequestProcessor()
@@ -17,11 +18,30 @@ final class RemoteRequestProcessorTests: XCTestCase {
         XCTAssertEqual(result, .failure(.invalidPath("invalidPath")))
     }
 
-    func testProcess_givenValidateUsernamePath_returnsSuccessWithExpectedData() throws {
+    func testProcess_givenValidateUsernamePathWithoutData_returnsNoDataError() throws {
         var request = Request()
         request.path = "/validateUsername"
         let processor = RemoteRequestProcessor()
         let result = processor.process(request)
-        XCTAssertEqual(result, .success(Data("Processed username validation".utf8)))
+        XCTAssertEqual(result, .failure(.noDataProvided))
+    }
+
+    func testProcess_givenValidateUsernamePathWithInvalidData_returnsUnexpectedBodyError() throws {
+        var request = Request()
+        request.path = "/validateUsername"
+        request.input = Data("{\"hello\":\"world\"}".utf8)
+        let processor = RemoteRequestProcessor()
+        let result = processor.process(request)
+        XCTAssertEqual(result, .failure(.unexpectedBody(data: Data("{\"hello\":\"world\"}".utf8), path: "/validateUsername")))
+    }
+
+    // MARK: Happy paths
+    func testProcess_givenValidateUsernamePathWithValidData_returnsSuccessWithExpectedData() throws {
+        var request = Request()
+        request.path = "/validateUsername"
+        request.input = Data("{\"username\":\"cjwilliamson\"}".utf8)
+        let processor = RemoteRequestProcessor()
+        let result = processor.process(request)
+        XCTAssertEqual(result, .success(Data("Processed username: cjwilliamson".utf8)))
     }
 }

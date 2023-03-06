@@ -1,5 +1,26 @@
+import Foundation
+import Embassy
+
 extension Request {
-//    var path: String? { self["PATH_INFO"] }
+//    (((Data) -> Void)?) -> Void
+    var input: Data? {
+        set {
+            guard let newValue = newValue else { self["swsgi.input"] = nil; return  }
+            let inputFunc: SWSGIInput = { (function: ((Data) -> Void)?) in function?(newValue) }
+            self["swsgi.input"] = inputFunc
+        }
+        get {
+            guard let function = self["swsgi.input"] as? SWSGIInput else { return nil }
+            var data: Data?
+            function { inData in
+                data = inData
+            }
+            return data
+        }
+
+
+    }
+
     var path: String? {
         set {
             self["PATH_INFO"] = newValue
@@ -9,3 +30,6 @@ extension Request {
         }
     }
 }
+
+// Function that takes a function as input and returns void
+// Inner function takes data as input and returns void
