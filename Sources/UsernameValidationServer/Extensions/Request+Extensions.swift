@@ -2,7 +2,6 @@ import Foundation
 import Embassy
 
 extension Request {
-//    (((Data) -> Void)?) -> Void
     var input: Data? {
         set {
             guard let newValue = newValue else { self["swsgi.input"] = nil; return  }
@@ -16,7 +15,6 @@ extension Request {
             function({ inData in
                 guard inData.count > 0 else { return }
                 data = inData
-
             })
 
             return data
@@ -34,6 +32,3 @@ extension Request {
         }
     }
 }
-
-// Function that takes a function as input and returns void
-// Inner function takes data as input and returns void
