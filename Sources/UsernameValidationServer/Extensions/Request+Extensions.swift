@@ -12,9 +12,13 @@ extension Request {
         get {
             guard let function = self["swsgi.input"] as? SWSGIInput else { return nil }
             var data: Data?
-            function { inData in
+
+            function({ inData in
+                guard inData.count > 0 else { return }
                 data = inData
-            }
+
+            })
+
             return data
         }
 

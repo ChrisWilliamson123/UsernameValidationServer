@@ -12,7 +12,7 @@ public struct UsernameValidationServer {
         let loop = try! SelectorEventLoop(selector: try! KqueueSelector())
         let server = DefaultHTTPServer(eventLoop: loop, interface: "::1", port: 8000) { (request: Request, startResponse: ((String, [(String, String)]) -> Void), sendBody: ((Data) -> Void)) in
             defer { sendBody(Data()) }
-            let error = RequestProcessingError.missingPath
+
             let processor = RemoteRequestProcessor()
             let result = processor.process(request)
             switch result {
